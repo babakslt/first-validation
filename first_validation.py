@@ -5,6 +5,9 @@ from pathlib import Path
 
 from hashlib import sha1
 
+
+#from pandas import read_csv
+
 data_pth = Path() / 'data'
 example_pth =  data_pth / '24719.f3_beh_CHYM.csv'
 
@@ -31,7 +34,9 @@ def hash_for_fname(fname):
     # Convert a string filename to a Path object.
     fpath = Path(fname)
     # Your code here.
-    return 'not-really-the-hash'
+    contents = fpath.read_bytes()
+    hash_value = sha1(contents).hexdigest()
+    return hash_value
 
 
 # Fill in the function above to make the test below pass.
@@ -54,7 +59,19 @@ def check_hashes(hash_fname):
         # Calculate actual hash for given filename.
         # Check actual hash against expected hash
         # Return False if any of the hashes do not match.
-    return False
+    def get_file_hash(path_fname):
+        contents = path_fname.read_bytes()
+        hash_value = sha1(contents).hexdigest()
+        return hash_value
+
+    hash_text = hash_fname.read_text().splitlines()
+    for line in hash_text:
+        hash,_,file = line.split(" ")
+        _hash = get_file_hash(data_dir/Path(file))
+        if hash == _hash:
+            continue
+        else: return False
+    return True
 
 
 assert check_hashes(hashes_pth), 'Check hash list does not return True'
